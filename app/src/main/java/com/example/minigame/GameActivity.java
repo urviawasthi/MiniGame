@@ -30,18 +30,5 @@ public class GameActivity extends AppCompatActivity {
         //OLD adding it to contentview
         setContentView(gameView);
 
-        /* CANT ADD THESE FOR SOME REASON?
-        protected void onPause() {
-            super.onPause();
-            gameView.pause();
-        }
-
-        //running the game when activity is resumed
-
-        protected void onResume() {
-            super.onResume();
-            gameView.resume();
-        }
-        */
     }
 }
