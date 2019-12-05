@@ -14,8 +14,7 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //OLD gameView = new GameView(this);
-        //OLD setContentView(gameView);
+
         //Getting display object
         Display display = getWindowManager().getDefaultDisplay();
 
@@ -27,7 +26,7 @@ public class GameActivity extends AppCompatActivity {
         //this time we are also passing the screen size to the GameView constructor
         gameView = new GameView(this);
 
-        //OLD adding it to contentview
+        //OLD adding it to content view
         setContentView(gameView);
 
     }
