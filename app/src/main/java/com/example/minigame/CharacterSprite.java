@@ -20,13 +20,14 @@ public class CharacterSprite {
 
     public CharacterSprite(Bitmap bmp, int x, int y) {
         image = bmp;
-        x = xPosition;
-        y = yPosition;
+        xPosition = x;
+        yPosition = y;
+        isCrashing = false;
     }
 
     public void draw(Canvas canvas) {
         //Paint paint = new Paint();
-        System.out.println("im drawing student");
+        //System.out.println("im drawing student");
         canvas.drawBitmap(image, xPosition, yPosition, null);
     }
 
@@ -38,6 +39,12 @@ public class CharacterSprite {
             //depending on which wave it is, change the SPEED
             //depending on where it's coming from, DIFF X AND Y
             //redraw
+            if (wave == 1) {
+                //System.out.println("MOOOOVEEEE");
+                xPosition += 5;
+                yPosition += 5;
+                //draw(canvas);
+            }
         }
     }
 }

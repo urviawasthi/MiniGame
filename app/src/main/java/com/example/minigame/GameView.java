@@ -3,16 +3,23 @@ package com.example.minigame;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapRegionDecoder;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 
 
 import androidx.appcompat.app.AlertDialog;
+
+import java.util.ArrayList;
 
 public class GameView extends SurfaceView {
 
@@ -29,6 +36,17 @@ public class GameView extends SurfaceView {
     private Paint paint;
     private SurfaceHolder surfaceHolder;
     private CharacterSprite characterSprite;
+    private int enemiesKilled = 0;
+    private ArrayList<CharacterSprite> wave1 = new ArrayList<>();
+    private ArrayList<CharacterSprite> wave2 = new ArrayList<>();
+    private ArrayList<CharacterSprite> wave3 = new ArrayList<>();
+    private Canvas sameCanvas;
+    private boolean start = false;
+    Bitmap myBackground;
+    private int width = Resources.getSystem().getDisplayMetrics().widthPixels;
+    private int height = Resources.getSystem().getDisplayMetrics().heightPixels;
+    Bitmap pauseButton;
+
 
     //Constructor
     public GameView(Context context) {
@@ -36,12 +54,16 @@ public class GameView extends SurfaceView {
         surfaceHolder = getHolder();
         gameThread = new MainThread(this, surfaceHolder);
         setFocusable(true);
-
         gameContext = context;
         //right now, the game is not over and the user is playing the game
         isGameOver = false; //$$$ would this cause problemos?
         //initialize drawing stuff
         paint = new Paint();
+        myBackground = BitmapFactory.decodeResource(getResources(),R.drawable.gameactivitybackground);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.pleasepause);
+        pauseButton = Bitmap.createScaledBitmap(bitmap, 200, 200, false);
+        //BUTTON LOCATION -> x is from (width - 230) to (width - 30)
+        //                -> y is from (0) to (30)
         //Implement SurfaceHolder.Callback and only render on the Surface
         //when you receive the surfaceCreated(SurfaceHolder holder) callback. For example:
         surfaceHolder.addCallback(new SurfaceHolder.Callback() {
@@ -68,7 +90,7 @@ public class GameView extends SurfaceView {
                 //draw();
                 characterSprite = new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.studenttemp), 0, 0);
                 gameThread.setRunning(true);
-                System.out.println("game view calls it to run");
+                //System.out.println("game view calls it to run");
                 gameThread.start();
             }
             @Override
@@ -80,16 +102,35 @@ public class GameView extends SurfaceView {
     @Override
     public void draw(Canvas canvas1) {
         super.draw(canvas1);
+        sameCanvas = canvas1;
         if (canvas1 != null) {
-            System.out.println("it is valid and I'm trying to draw");
-            canvas1.drawColor(Color.RED);
-            characterSprite.draw(canvas1);
+            //System.out.println("it is valid and I'm trying to draw");
+            Rect src = new Rect();
+            src.set(0, 0, width, height);
+            Rect dest = new Rect();
+            dest.set(0, 0, 1000, 600);
+            canvas1.drawBitmap(myBackground, dest, src, null);
+            canvas1.drawBitmap(pauseButton, width - 230, 30, null);
+            for (int i = 0; i < wave1.size(); i++) {
+                wave1.get(i).draw(canvas1);
+            }
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_DOWN:
+                float touched_x = motionEvent.getX();
+                float touched_y = motionEvent.getY();
+                System.out.println("x: " + touched_x + ", y: " + touched_y);
+        }
+      return true;
     }
 
     public void update() {
         //if game is over, then display respective dialog
-        System.out.println("I am updating");
+        //System.out.println("I am updating");
         if (isGameOver) {
             AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
             builder.setMessage("Game Over!");
@@ -118,9 +159,31 @@ public class GameView extends SurfaceView {
             //if new position clashes with geoff
             //EXTRA: lives and pic changes
         }
+        //have 3 arrays with three waves with initialized characters with randomized positions and randomized quadrants
+        //tell each character object what wave they are and what quadrant they are
+        //if else statements - if all the characters in the previous wave are gone, start new wave
+        //IF first wave -> loop through them and call move on them
+        if (enemiesKilled > 8) {
+            //third infinite wave
+        } else if (enemiesKilled > 3) {
+            //second wave
+        } else {
+            //first three enemies
+            //how do I create enemies here?
+            //System.out.println("HELLO");
+            if (!start) {
+                //create the enemies
+                //System.out.println("CREATE ENEMIESSS");
+                for (int i = 0; i < 30; i+= 10) {
+                    wave1.add(new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.studenttemp),i + 20, i + 20)); //create 3 different ones and add them
+                    start = true;
+                }
+            } else {
+                //move the already created enemies
+                for (int i = 0; i < 3; i++) {
+                    wave1.get(i).move(1);
+                }
+            }
+        }
     }
-    //have 3 arrays with three waves with initialized characters with randomized positions
-    //tell each character object what wave they are
-    //if else statements - if all the characters in the previous wave are gone, start new wave
-    //IF first wave -> make them all visible and start moving them
-    }
+}
