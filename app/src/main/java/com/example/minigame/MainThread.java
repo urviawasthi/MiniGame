@@ -30,18 +30,14 @@ public class MainThread extends Thread {
         while (running) {
             canvas = null;
             try {
-                if (holder == null) {
-                    System.out.println("holder is null");
-                }
                 canvas = holder.lockCanvas();
                 synchronized(holder) {
                     gameView.update();
-                    System.out.println("thread is calling draw");
                     gameView.draw(canvas);
                 }
             } catch (Exception e) {
                 //we are so fucking dumb it's unreal
-                //System.out.println(e.getMessage());
+                System.out.println(e.getMessage());
             } finally {
                 if (canvas != null) {
                     try {

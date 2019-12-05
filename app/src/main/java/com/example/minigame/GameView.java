@@ -13,6 +13,8 @@ import android.view.SurfaceHolder;
 
 import androidx.appcompat.app.AlertDialog;
 
+import static com.example.minigame.MainThread.canvas;
+
 public class GameView extends SurfaceView {
 
     /** Main game loop. */
@@ -28,6 +30,9 @@ public class GameView extends SurfaceView {
     private Paint paint;
     private SurfaceHolder surfaceHolder;
 
+    //Initializing Geoff, the legend himself
+    private Geoff geoffHappy;
+
     //Constructor
     public GameView(Context context) {
         super(context);
@@ -36,10 +41,16 @@ public class GameView extends SurfaceView {
         setFocusable(true);
 
         gameContext = context;
+
         //right now, the game is not over and the user is playing the game
         isGameOver = false; //$$$ would this cause problemos?
+
         //initialize drawing stuff
         paint = new Paint();
+
+        //initializing geoff
+        geoffHappy = new Geoff(context);
+
         //Implement SurfaceHolder.Callback and only render on the Surface
         //when you receive the surfaceCreated(SurfaceHolder holder) callback. For example:
         surfaceHolder.addCallback(new SurfaceHolder.Callback() {
@@ -65,7 +76,6 @@ public class GameView extends SurfaceView {
                 //controls the running and set it equal to true
                 //draw();
                 gameThread.setRunning(true);
-                System.out.println("game view calls it to run");
                 gameThread.start();
             }
             @Override
@@ -78,14 +88,20 @@ public class GameView extends SurfaceView {
     public void draw(Canvas canvas1) {
         super.draw(canvas1);
         if (canvas1 != null) {
-            System.out.println("it is valid and I'm trying to draw");
-            canvas1.drawColor(Color.RED);
+            //background color for canvas
+            canvas1.drawColor(Color.GREEN);
+
+            //drawing geoff to the canvas
+            canvas.drawBitmap(
+                    geoffHappy.getBitmap(),
+                    geoffHappy.getX(),
+                    geoffHappy.getY(),
+                    paint);
         }
     }
 
     public void update() {
         //if game is over, then display respective dialog
-        System.out.println("I am updating");
         if (isGameOver) {
             AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
             builder.setMessage("Game Over!");
