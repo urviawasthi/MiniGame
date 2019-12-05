@@ -2,15 +2,24 @@ package com.example.minigame;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
+import android.view.SurfaceHolder;
+
+
 
 import androidx.appcompat.app.AlertDialog;
 
 public class MainThread extends Thread {
     private GameView gameView;
     private boolean running = false;
+    private SurfaceHolder holder;
+    private SurfaceHolder surfaceHolder;
+    public static Canvas canvas;
 
-    public MainThread(GameView gameView) {
+
+    public MainThread(GameView gameView, SurfaceHolder surfaceHolder) {
+        super();
         this.gameView = gameView;
+        holder = surfaceHolder;
     }
 
     public void setRunning(boolean run) {
@@ -18,21 +27,29 @@ public class MainThread extends Thread {
     }
     public void run() {
         while (running) {
-
-            //get the canvas
-            //send the canvas to onDraw
-            Canvas c = gameView.getHolder().lockCanvas();
-            gameView.onDraw(c);
-
-            //to update the frame
-            //update students and geoff
-            update();
-
-            //to draw the frame
-            //draw them at the different position
-            //System.out.println("Im drawing?");
-            //We know this function is getting called
-
+            canvas = null;
+            try {
+                if (holder == null) {
+                    System.out.println("holder is null");
+                }
+                canvas = holder.lockCanvas();
+                synchronized(holder) {
+                    gameView.update();
+                    System.out.println("thread is calling draw");
+                    gameView.ourDraw(canvas, holder);
+                }
+            } catch (Exception e) {
+                //we are so fucking dumb it's unreal
+                //System.out.println(e.getMessage());
+            } finally {
+                if (canvas != null) {
+                    try {
+                        holder.unlockCanvasAndPost(canvas);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
     }
 
@@ -45,7 +62,7 @@ public class MainThread extends Thread {
     }
     */
 
-    public void pause() {
+    /* public void pause() {
         //when the game is paused
         //setting the variable to false
         running = false;
@@ -74,38 +91,8 @@ public class MainThread extends Thread {
         });
 
         builder.create().show();
-    }
+    } */
 
-    private void update() {
-        //if game is over, then display respective dialog
-        if (isGameOver) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
-            builder.setMessage("Game Over!");
-            //PUT API WITH ADVICE SLIPS
-            // Add the buttons
-            builder.setPositiveButton("Play Again", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    // User clicked play again
-                    Intent intent = new Intent(gameContext, GameActivity.class);
-                    gameContext.startActivity(intent);
-                }
-            });
-            builder.setNegativeButton("Main Menu", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    // user clicked main menu
-                    Intent intent = new Intent(gameContext, MainActivity.class);
-                    gameContext.startActivity(intent);
-                }
-            });
-            builder.create().show();
 
-            //also need to add game to high scores here?
-            //will implement the above later!
-            //move positions of students
-            //MAIN: if geoff is hit, game over is false, playing is false
-            //if new position clashes with geoff
-            //EXTRA: lives and pic changes
-        }
-    }
 
 }
