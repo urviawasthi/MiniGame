@@ -3,6 +3,7 @@ package com.example.minigame;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -27,7 +28,7 @@ public class GameView extends SurfaceView {
     //Need these to draw
     private Paint paint;
     private SurfaceHolder surfaceHolder;
-
+    private CharacterSprite characterSprite;
     //Constructor
     public GameView(Context context) {
         super(context);
@@ -80,12 +81,12 @@ public class GameView extends SurfaceView {
         if (canvas1 != null) {
             System.out.println("it is valid and I'm trying to draw");
             canvas1.drawColor(Color.RED);
+            characterSprite.draw(canvas1);
         }
     }
 
     public void update() {
         //if game is over, then display respective dialog
-        System.out.println("I am updating");
         if (isGameOver) {
             AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
             builder.setMessage("Game Over!");
@@ -114,5 +115,9 @@ public class GameView extends SurfaceView {
             //if new position clashes with geoff
             //EXTRA: lives and pic changes
         }
+        //HAVE AN ARRAYLIST OF THEM AND RANDOMIZE PICTURES, LOOP
+        //3 lists, 3 loops
+        // 
+        characterSprite = new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.studenttemp), 3,4);
     }
     }
