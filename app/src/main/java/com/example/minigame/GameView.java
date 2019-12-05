@@ -29,11 +29,12 @@ public class GameView extends SurfaceView {
     private SurfaceHolder surfaceHolder;
 
     //Constructor
-    public GameView(Context context, int x, int y) {
+    public GameView(Context context) {
         super(context);
         surfaceHolder = getHolder();
         gameThread = new MainThread(this, surfaceHolder);
         setFocusable(true);
+
         gameContext = context;
         //right now, the game is not over and the user is playing the game
         isGameOver = false; //$$$ would this cause problemos?
@@ -65,7 +66,7 @@ public class GameView extends SurfaceView {
                 //draw();
                 gameThread.setRunning(true);
                 System.out.println("game view calls it to run");
-                gameThread.run();
+                gameThread.start();
             }
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
@@ -73,13 +74,12 @@ public class GameView extends SurfaceView {
         });
     }
 
-    public void ourDraw(Canvas canvas1, SurfaceHolder holder) {
-        if (holder.getSurface().isValid()) {
+    @Override
+    public void draw(Canvas canvas1) {
+        super.draw(canvas1);
+        if (canvas1 != null) {
             System.out.println("it is valid and I'm trying to draw");
             canvas1.drawColor(Color.RED);
-            //holder.unlockCanvasAndPost(canvas1);
-        } else {
-            System.out.println("not valid");
         }
     }
 

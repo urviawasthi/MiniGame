@@ -25,7 +25,7 @@ public class GameActivity extends AppCompatActivity {
 
         //Initializing game view object
         //this time we are also passing the screen size to the GameView constructor
-        gameView = new GameView(this, size.x, size.y);
+        gameView = new GameView(this);
 
         //OLD adding it to contentview
         setContentView(gameView);

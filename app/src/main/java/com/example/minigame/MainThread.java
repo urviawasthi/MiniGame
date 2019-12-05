@@ -12,19 +12,20 @@ public class MainThread extends Thread {
     private GameView gameView;
     private boolean running = false;
     private SurfaceHolder holder;
-    private SurfaceHolder surfaceHolder;
     public static Canvas canvas;
 
 
     public MainThread(GameView gameView, SurfaceHolder surfaceHolder) {
         super();
         this.gameView = gameView;
-        holder = surfaceHolder;
+        this.holder = surfaceHolder;
     }
 
     public void setRunning(boolean run) {
         running = run;
     }
+
+    @Override
     public void run() {
         while (running) {
             canvas = null;
@@ -36,7 +37,7 @@ public class MainThread extends Thread {
                 synchronized(holder) {
                     gameView.update();
                     System.out.println("thread is calling draw");
-                    gameView.ourDraw(canvas, holder);
+                    gameView.draw(canvas);
                 }
             } catch (Exception e) {
                 //we are so fucking dumb it's unreal
