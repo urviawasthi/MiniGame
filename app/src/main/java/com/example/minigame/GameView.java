@@ -3,17 +3,20 @@ package com.example.minigame;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.view.SurfaceView;
+import android.util.AttributeSet;
+import android.view.SurfaceHolder;
+
 
 import androidx.appcompat.app.AlertDialog;
 
-public class GameView extends SurfaceView implements Runnable {
-
-    /** Indicates whether the game is being played or not. */
-    private boolean playing;
+public class GameView extends SurfaceView {
 
     /** Main game loop. */
-    private Thread gameThread = null;
+    private Thread gameThread ;
 
     /** Indicates whether game is over or not. */
     private boolean isGameOver;
@@ -21,123 +24,53 @@ public class GameView extends SurfaceView implements Runnable {
     /** Current context for this game view. */
     private Context gameContext;
 
+    //Need these to draw
+    private Paint paint;
+    private Canvas canvas;
+    private SurfaceHolder surfaceHolder;
+
     //Constructor
-    public GameView(Context context) {
+    public GameView(Context context, int x, int y) {
         super(context);
+        gameThread = new MainThread(this);
+        System.out.println("Can i even do this?");
         gameContext = context;
         //right now, the game is not over and the user is playing the game
-        isGameOver = false;
-        playing = true;
-    }
-
-    /**
-     * Running a loop while the user is playing.
-     */
-    @Override
-    public void run() {
-        while (playing) {
-            //to update the frame
-            update();
-
-            //to draw the frame
-            draw();
-
-            //to control
-            control();
-        }
-    }
-
-    /**
-     * Updating the frame, and location of our characters.
-     */
-    private void update() {
-        //if game is over, then display respective dialog
-        if (isGameOver) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
-            builder.setMessage("Game Over!");
-            // Add the buttons
-            builder.setPositiveButton("Play Again", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    // User clicked play again
-                    Intent intent = new Intent(gameContext, GameActivity.class);
-                    gameContext.startActivity(intent);
-                }
-            });
-            builder.setNegativeButton("Main Menu", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    // user clicked main menu
-                    Intent intent = new Intent(gameContext, MainActivity.class);
-                    gameContext.startActivity(intent);
-                }
-            });
-
-            builder.create().show();
-
-            //also need to add game to high scores here?
-            //will implement the above later!
-        }
-    }
-
-    /**
-     * Drawing the characters to the canvas.
-     */
-    private void draw() {
-
-    }
-
-    /**
-     * Controlling how many frames are drawn per second.
-     */
-    private void control() {
-        try {
-            gameThread.sleep(17);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * If the game is paused.
-     */
-    public void pause() {
-        //when the game is paused
-        //setting the variable to false
-        playing = false;
-        try {
-            //stopping the thread
-            gameThread.join();
-        } catch (InterruptedException e) {
-        }
-
-        //also show a dialog that tells the user the game is paused, and asks them to resume
-        AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
-        builder.setMessage("Game Paused!");
-        // Add the buttons
-        builder.setPositiveButton("Resume", new DialogInterface.OnClickListener() {
-            //user clicked resume
-            public void onClick(DialogInterface dialog, int id) {
-                resume();
+        isGameOver = false; //$$$ would this cause problemos?
+        //initialize drawing stuff
+        surfaceHolder = getHolder();
+        paint = new Paint();
+        //Implement SurfaceHolder.Callback and only render on the Surface
+        //when you receive the surfaceCreated(SurfaceHolder holder) callback. For example:
+        surfaceHolder.addCallback(new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceDestroyed(SurfaceHolder holder) {
+                //stop render thread here
             }
-        });
-        builder.setNegativeButton("Quit", new DialogInterface.OnClickListener() {
-            // user clicked quit
-            public void onClick(DialogInterface dialog, int id) {
-                Intent intent = new Intent(gameContext, MainActivity.class);
-                gameContext.startActivity(intent);
+
+            @Override
+            public void surfaceCreated(SurfaceHolder holder) {
+                //start render thread here
+                //playing = true;
+                //gameThread.setRunning(true);
+                //gameThread.start();
+                draw();
             }
+            @Override
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
+
         });
-
-        builder.create().show();
     }
 
-    /**
-     * Resuming the game.
-     */
-    public void resume() {
-        //when the game is resumed
-        //starting the thread again
-        playing = true;
-        gameThread = new Thread(this);
-        gameThread.start();
+
+    protected void draw() {
+        if (surfaceHolder.getSurface().isValid()) {
+            System.out.println("it is valid and I'm trying to draw");
+            canvas = surfaceHolder.lockCanvas();
+            canvas.drawColor(Color.RED);
+            surfaceHolder.unlockCanvasAndPost(canvas);
+        } else {
+            System.out.println("not valid");
+        }
     }
-}
+    }

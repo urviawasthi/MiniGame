@@ -2,7 +2,9 @@ package com.example.minigame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Point;
 import android.os.Bundle;
+import android.view.Display;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -12,7 +14,34 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        gameView = new GameView(this);
+        //OLD gameView = new GameView(this);
+        //OLD setContentView(gameView);
+        //Getting display object
+        Display display = getWindowManager().getDefaultDisplay();
+
+        //Getting the screen resolution into point object
+        Point size = new Point();
+        display.getSize(size);
+
+        //Initializing game view object
+        //this time we are also passing the screen size to the GameView constructor
+        gameView = new GameView(this, size.x, size.y);
+
+        //OLD adding it to contentview
         setContentView(gameView);
+
+        /* CANT ADD THESE FOR SOME REASON?
+        protected void onPause() {
+            super.onPause();
+            gameView.pause();
+        }
+
+        //running the game when activity is resumed
+
+        protected void onResume() {
+            super.onResume();
+            gameView.resume();
+        }
+        */
     }
 }
