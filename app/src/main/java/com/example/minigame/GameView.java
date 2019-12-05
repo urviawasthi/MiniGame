@@ -3,6 +3,7 @@ package com.example.minigame;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -27,6 +28,7 @@ public class GameView extends SurfaceView {
     //Need these to draw
     private Paint paint;
     private SurfaceHolder surfaceHolder;
+    private CharacterSprite characterSprite;
 
     //Constructor
     public GameView(Context context) {
@@ -64,6 +66,7 @@ public class GameView extends SurfaceView {
                 //When the surface is created, call your game thread variable's function that
                 //controls the running and set it equal to true
                 //draw();
+                characterSprite = new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.studenttemp), 0, 0);
                 gameThread.setRunning(true);
                 System.out.println("game view calls it to run");
                 gameThread.start();
@@ -80,6 +83,7 @@ public class GameView extends SurfaceView {
         if (canvas1 != null) {
             System.out.println("it is valid and I'm trying to draw");
             canvas1.drawColor(Color.RED);
+            characterSprite.draw(canvas1);
         }
     }
 
@@ -115,4 +119,8 @@ public class GameView extends SurfaceView {
             //EXTRA: lives and pic changes
         }
     }
+    //have 3 arrays with three waves with initialized characters with randomized positions
+    //tell each character object what wave they are
+    //if else statements - if all the characters in the previous wave are gone, start new wave
+    //IF first wave -> make them all visible and start moving them
     }
