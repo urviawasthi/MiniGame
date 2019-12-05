@@ -32,6 +32,7 @@
 
     <Button
         android:id="@+id/playButton"
+        style="@android:style/Widget.Holo.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="290dp"
@@ -41,6 +42,9 @@
         android:layout_marginRight="289dp"
         android:layout_marginBottom="104dp"
         android:text="Play Now"
+        android:textColor="#8DC790"
+        android:textColorLink="#1C1C1C"
+        android:textStyle="bold"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -49,8 +53,9 @@
 
     <Button
         android:id="@+id/highScoresButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@android:style/Widget.Holo.Button"
+        android:layout_width="99dp"
+        android:layout_height="43dp"
         android:layout_marginStart="280dp"
         android:layout_marginLeft="280dp"
         android:layout_marginTop="327dp"
@@ -58,6 +63,9 @@
         android:layout_marginRight="279dp"
         android:layout_marginBottom="56dp"
         android:text="High Scores"
+        android:textColor="#7CBE7E"
+        android:textSize="12sp"
+        android:textStyle="bold"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
