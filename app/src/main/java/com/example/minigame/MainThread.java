@@ -1,4 +1,9 @@
 package com.example.minigame;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Canvas;
+
+import androidx.appcompat.app.AlertDialog;
 
 public class MainThread extends Thread {
     private GameView gameView;
@@ -12,8 +17,13 @@ public class MainThread extends Thread {
         running = run;
     }
     public void run() {
-        /*
-        while (playing) {
+        while (running) {
+
+            //get the canvas
+            //send the canvas to onDraw
+            Canvas c = gameView.getHolder().lockCanvas();
+            gameView.onDraw(c);
+
             //to update the frame
             //update students and geoff
             update();
@@ -22,22 +32,23 @@ public class MainThread extends Thread {
             //draw them at the different position
             //System.out.println("Im drawing?");
             //We know this function is getting called
-            draw();
 
-            //to control
-            control();
-             private void control() {
-        try {
-            gameThread.sleep(17);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
-        }
-         public void pause() {
+
+    /*
+    public void resume() {
+        //when the game is resumed
+        //starting the thread again
+        playing = true;
+        gameThread.start();
+    }
+    */
+
+    public void pause() {
         //when the game is paused
         //setting the variable to false
-        playing = false;
+        running = false;
         try {
             //stopping the thread
             gameThread.join();
@@ -51,7 +62,7 @@ public class MainThread extends Thread {
         builder.setPositiveButton("Resume", new DialogInterface.OnClickListener() {
             //user clicked resume
             public void onClick(DialogInterface dialog, int id) {
-               // resume();
+                // resume();
             }
         });
         builder.setNegativeButton("Quit", new DialogInterface.OnClickListener() {
@@ -64,13 +75,8 @@ public class MainThread extends Thread {
 
         builder.create().show();
     }
- //public void resume() {
-        //when the game is resumed
-        //starting the thread again
-        //playing = true;
-        //gameThread = new Thread(this);
-        //gameThread.start();
-        private void update() {
+
+    private void update() {
         //if game is over, then display respective dialog
         if (isGameOver) {
             AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
@@ -101,11 +107,5 @@ public class MainThread extends Thread {
             //EXTRA: lives and pic changes
         }
     }
-
-
-
-         */
-    }
-
 
 }
