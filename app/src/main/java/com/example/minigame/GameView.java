@@ -16,7 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 public class GameView extends SurfaceView {
 
     /** Main game loop. */
-    private Thread gameThread ;
+    private MainThread gameThread ;
 
     /** Indicates whether game is over or not. */
     private boolean isGameOver;
@@ -26,14 +26,12 @@ public class GameView extends SurfaceView {
 
     //Need these to draw
     private Paint paint;
-    private Canvas canvas;
     private SurfaceHolder surfaceHolder;
 
     //Constructor
     public GameView(Context context, int x, int y) {
         super(context);
         gameThread = new MainThread(this);
-        System.out.println("Can i even do this?");
         gameContext = context;
         //right now, the game is not over and the user is playing the game
         isGameOver = false; //$$$ would this cause problemos?
@@ -51,10 +49,11 @@ public class GameView extends SurfaceView {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
                 //start render thread here
-                //playing = true;
-                //gameThread.setRunning(true);
-                //gameThread.start();
-                draw();
+                //When the surface is created, call your game thread variable's function that
+                //controls the running and set it equal to true
+                //draw();
+                gameThread.setRunning(true);
+                gameThread.start();
             }
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
@@ -63,10 +62,9 @@ public class GameView extends SurfaceView {
     }
 
 
-    protected void draw() {
+    protected void onDraw(Canvas canvas) {
         if (surfaceHolder.getSurface().isValid()) {
             System.out.println("it is valid and I'm trying to draw");
-            canvas = surfaceHolder.lockCanvas();
             canvas.drawColor(Color.RED);
             surfaceHolder.unlockCanvasAndPost(canvas);
         } else {

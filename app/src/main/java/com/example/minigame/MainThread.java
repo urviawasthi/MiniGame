@@ -8,10 +8,12 @@ public class MainThread extends Thread {
         this.gameView = gameView;
     }
 
-    public void setRunning(boolean run) {
+    public void setRunning(Boolean run) {
         running = run;
     }
+    @Override
     public void run() {
+        //while (running ==  true)
         /*
         while (playing) {
             //to update the frame
