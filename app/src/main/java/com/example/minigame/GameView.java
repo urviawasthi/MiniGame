@@ -32,22 +32,25 @@ public class GameView extends SurfaceView {
     /** Current context for this game view. */
     private Context gameContext;
 
-    /** Geoff's face in the middle of the screen. */
+    /** Geoff player in the middle of the screen. */
     private Geoff happyGeoff;
+
+    /** Keeping track of enemy count and kill count to update game difficulty */
+    private int enemiesKilled = 0;
+    private int enemyCount = 0;
 
     //Need these to draw
     private Paint paint;
     private SurfaceHolder surfaceHolder;
-    private CharacterSprite characterSprite;
-    private int enemiesKilled = 0;
     private ArrayList<CharacterSprite> wave1 = new ArrayList<>();
     private ArrayList<CharacterSprite> wave2 = new ArrayList<>();
     private ArrayList<CharacterSprite> wave3 = new ArrayList<>();
-    private boolean start = false;
-    Bitmap myBackground;
     private int width = Resources.getSystem().getDisplayMetrics().widthPixels;
     private int height = Resources.getSystem().getDisplayMetrics().heightPixels;
+
+    Bitmap myBackground;
     Bitmap pauseButton;
+    Bitmap studentImage;
 
 
     //Constructor
@@ -66,6 +69,7 @@ public class GameView extends SurfaceView {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.pleasepause);
         pauseButton = Bitmap.createScaledBitmap(bitmap, 200, 200, false);
         happyGeoff = new Geoff(context);
+        studentImage = BitmapFactory.decodeResource(getResources(),R.drawable.studenttemp);
 
         //BUTTON LOCATION -> x is from (width - 230) to (width - 30)
         //                -> y is from (0) to (30)
@@ -92,10 +96,7 @@ public class GameView extends SurfaceView {
                 //start render thread here
                 //When the surface is created, call your game thread variable's function that
                 //controls the running and set it equal to true
-                //draw();
-                characterSprite = new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.studenttemp));
                 gameThread.setRunning(true);
-                //System.out.println("game view calls it to run");
                 gameThread.start();
             }
             @Override
@@ -120,16 +121,18 @@ public class GameView extends SurfaceView {
                     happyGeoff.getX(),
                     happyGeoff.getY(),
                     paint);
+            //we need to draw the sprites to the canvas
+            //wave1 is the list of enemies
+            //each time, we loop through the array list of enemies
+            //and draw each enemy to the canvas
             for (int i = 0; i < wave1.size(); i++) {
-                System.out.println(wave1.size());
+                wave1.get(i).move();
                 wave1.get(i).draw(canvas1);
             }
         }
     }
     public void pause() {
         //when the game is paused
-        //setting the variable to false
-        //running = false;
         try {
             //stopping the thread
             gameThread.setRunning(false);
@@ -161,16 +164,12 @@ public class GameView extends SurfaceView {
         //when the game is resumed
         //starting the thread again
         System.out.println("im in the resume function");
-        gameThread = new MainThread(this,surfaceHolder);
+        gameThread = new MainThread(this, surfaceHolder);
         gameThread.setRunning(true);
-        if (gameThread == null) {
-            System.out.println("HOW CAN GAME THREAD BE NULL");
-        }
         try {
             gameThread.start();
-        } catch (IllegalThreadStateException e) {
-            System.out.println(e.getMessage() + " bro");
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
     @Override
@@ -180,27 +179,26 @@ public class GameView extends SurfaceView {
                 float touched_x = motionEvent.getX();
                 float touched_y = motionEvent.getY();
                 if (touched_x > width - 230 && touched_x < width - 30 && touched_y > 30 && touched_y < 230) {
-                    System.out.println("CLICKED PAUSE");
                     pause();
                 }
         }
+        //check collision depending on which wave it is
         synchronized (getHolder()) {
             for (int i = 0; i < wave1.size(); i++) {
                 CharacterSprite currentChar = wave1.get(i);
                 if (currentChar.isClicked(motionEvent.getX(), motionEvent.getY())) {
                     System.out.println("BEGONE THOTS GO AWAAAAAY");
-                    enemiesKilled++;
                     wave1.remove(currentChar);
+                    enemiesKilled++;
                     break;
                 }
             }
         }
-      return super.onTouchEvent(motionEvent);
+        return super.onTouchEvent(motionEvent);
     }
 
     public void update() {
         //if game is over, then display respective dialog
-        //System.out.println("I am updating");
         if (isGameOver) {
             AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
             builder.setMessage("Game Over!");
@@ -229,28 +227,25 @@ public class GameView extends SurfaceView {
             //if new position clashes with geoff
             //EXTRA: lives and pic changes
         }
-        //have 3 arrays with three waves with initialized characters with randomized positions and randomized quadrants
-        //tell each character object what wave they are and what quadrant they are
-        //if else statements - if all the characters in the previous wave are gone, start new wave
-        //IF first wave -> loop through them and call move on them
-        if (enemiesKilled > 8) {
-            //third infinite wave
-        } else if (enemiesKilled > 3) {
-            //second wave
-        } else {
-            //first create three enemies
-            if (!start) {
-                //create the enemies
-                //System.out.println("CREATE ENEMIESSS");
-                for (int i = 0; i < 30; i+= 10) {
-                    wave1.add(new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.studenttemp))); //create 3 different ones and add them
-                    start = true;
-                }
-            } else {
-                //move the already created enemies
-                for (int i = 0; i < 3; i++) {
-                    wave1.get(i).move();
-                }
+
+        //we'll have a counter with the amount of enemies
+        //every time you create an enemy, you increase the counter
+        //first we add one enemy to the arraylist and once that enemy is killed, then you create another enemy
+        if (enemyCount == 0) {
+            //no enemies have been created yet
+            CharacterSprite enemy = new CharacterSprite(studentImage, enemiesKilled + 1);
+            wave1.add(enemy);
+            System.out.println("added enemy");
+            enemyCount++;
+        }
+        //keep on increasing the amount of enemies you kill and speed of enemies
+        //will be based on how many enemies have been killed
+        if (enemiesKilled > 0) {
+            //player killed one enemy, move on to unlimited loop
+            for (int i = 0; i < enemiesKilled; i++) {
+                CharacterSprite enemy = new CharacterSprite(studentImage, enemiesKilled + 1);
+                wave1.add(enemy);
+                enemyCount++;
             }
         }
     }

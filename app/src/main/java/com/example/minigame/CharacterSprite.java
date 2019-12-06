@@ -26,7 +26,7 @@ public class CharacterSprite {
     private int speed;
     private Rect detectCollision;
 
-    public CharacterSprite(Bitmap bmp) {
+    public CharacterSprite(Bitmap bmp, int setSpeed) {
         image = bmp;
         image = Bitmap.createScaledBitmap(
                 image, characterWidth, characterHeight, false);
@@ -37,6 +37,7 @@ public class CharacterSprite {
         yDisplacement = Math.abs((screenHeight / 2) - yPosition);
 
         //scaling the velocities
+        speed = setSpeed;
         slope = yDisplacement / xDisplacement * speed;
 
         // detecting collision
@@ -93,11 +94,12 @@ public class CharacterSprite {
         if (quadrant == 1 || quadrant == 4) {
             high = screenWidth;
             low = screenWidth / 2;
-            return rand.nextInt(high - low) + low;
-        } else {
+            return rand.nextInt(high-low) + low;
+        }
+        else {
             high = screenWidth / 2;
             low = 0;
-            return rand.nextInt(high - low) + low;
+            return rand.nextInt(high-low) + low;
         }
     }
 
@@ -108,11 +110,12 @@ public class CharacterSprite {
         if (quadrant == 3 || quadrant == 4) {
             high = screenHeight;
             low = screenHeight / 2;
-            return rand.nextInt(high - low) + low;
-        } else {
+            return rand.nextInt(high-low) + low;
+        }
+        else {
             high = screenHeight / 2;
             low = 0;
-            return rand.nextInt(high - low) + low;
+            return rand.nextInt(high-low) + low;
         }
     }
 
@@ -173,5 +176,11 @@ public class CharacterSprite {
         //more than y position but less than y position plus width
         return (xClicked > xPosition) && (xClicked < xPosition + characterWidth)
                 && (yClicked > yPosition) && (yClicked < yPosition + characterHeight);
+    }
+
+    //checking if a certain button is clicked
+
+    public double getXPosition() {
+        return xPosition;
     }
 }
