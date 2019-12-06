@@ -41,8 +41,8 @@ public class CharacterSprite {
             //redraw
             if (wave == 1) {
                 //System.out.println("MOOOOVEEEE");
-                xPosition += 5;
-                yPosition += 5;
+                xPosition += xVelocity;
+                yPosition += yVelocity;
                 //draw(canvas);
             }
         }

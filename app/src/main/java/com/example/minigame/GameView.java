@@ -47,7 +47,6 @@ public class GameView extends SurfaceView {
     private int height = Resources.getSystem().getDisplayMetrics().heightPixels;
     Bitmap pauseButton;
 
-
     //Constructor
     public GameView(Context context) {
         super(context);
@@ -63,7 +62,7 @@ public class GameView extends SurfaceView {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.pleasepause);
         pauseButton = Bitmap.createScaledBitmap(bitmap, 200, 200, false);
         //BUTTON LOCATION -> x is from (width - 230) to (width - 30)
-        //                -> y is from (0) to (30)
+        //                -> y is from (30) to (230)
         //Implement SurfaceHolder.Callback and only render on the Surface
         //when you receive the surfaceCreated(SurfaceHolder holder) callback. For example:
         surfaceHolder.addCallback(new SurfaceHolder.Callback() {
@@ -116,14 +115,58 @@ public class GameView extends SurfaceView {
             }
         }
     }
+    public void pause() {
+        //when the game is paused
+        //setting the variable to false
+        //running = false;
+        try {
+            //stopping the thread
+            gameThread.setRunning(false);
+            gameThread.join();
+        } catch (InterruptedException e) {
+        }
 
+        //also show a dialog that tells the user the game is paused, and asks them to resume
+        AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
+        builder.setMessage("Game Paused!");
+        // Add the buttons
+        builder.setPositiveButton("Resume", new DialogInterface.OnClickListener() {
+            //user clicked resume
+            public void onClick(DialogInterface dialog, int id) {
+                resume();
+            }
+        });
+        builder.setNegativeButton("Quit", new DialogInterface.OnClickListener() {
+            // user clicked quit
+            public void onClick(DialogInterface dialog, int id) {
+                Intent intent = new Intent(gameContext, MainActivity.class);
+                gameContext.startActivity(intent);
+            }
+        });
+
+        builder.create().show();
+    }
+    public void resume() {
+        //when the game is resumed
+        //starting the thread again
+        System.out.println("im in the resume function");
+        gameThread.setRunning(true);
+        try {
+            gameThread.start();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
         switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 float touched_x = motionEvent.getX();
                 float touched_y = motionEvent.getY();
-                System.out.println("x: " + touched_x + ", y: " + touched_y);
+                if (touched_x > width - 230 && touched_x < width - 30 && touched_y > 30 && touched_y < 230) {
+                    System.out.println("CLICKED PAUSE");
+                    pause();
+                }
         }
       return true;
     }
