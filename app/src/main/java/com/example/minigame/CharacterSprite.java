@@ -31,7 +31,7 @@ public class CharacterSprite {
         image = Bitmap.createScaledBitmap(
                 image, characterWidth, characterHeight, false);
         generatePosition();
-        speed = 5;
+        speed = 2;
         //initial x and y velocites, without scaling
         xDisplacement = Math.abs(xPosition - (screenWidth / 2));
         yDisplacement = Math.abs((screenHeight / 2) - yPosition);
@@ -93,12 +93,11 @@ public class CharacterSprite {
         if (quadrant == 1 || quadrant == 4) {
             high = screenWidth;
             low = screenWidth / 2;
-            return rand.nextInt(high-low) + low;
-        }
-        else {
+            return rand.nextInt(high - low) + low;
+        } else {
             high = screenWidth / 2;
             low = 0;
-            return rand.nextInt(high-low) + low;
+            return rand.nextInt(high - low) + low;
         }
     }
 
@@ -109,12 +108,11 @@ public class CharacterSprite {
         if (quadrant == 3 || quadrant == 4) {
             high = screenHeight;
             low = screenHeight / 2;
-            return rand.nextInt(high-low) + low;
-        }
-        else {
+            return rand.nextInt(high - low) + low;
+        } else {
             high = screenHeight / 2;
             low = 0;
-            return rand.nextInt(high-low) + low;
+            return rand.nextInt(high - low) + low;
         }
     }
 
@@ -168,5 +166,12 @@ public class CharacterSprite {
     //returns the detect collision rectangle so that we can detect collision in different quadrants
     private Rect getDetectCollision() {
         return detectCollision;
+    }
+
+    public boolean isClicked(float xClicked, float yClicked) {
+        //more than x position but less than x position plus width
+        //more than y position but less than y position plus width
+        return (xClicked > xPosition) && (xClicked < xPosition + characterWidth)
+                && (yClicked > yPosition) && (yClicked < yPosition + characterHeight);
     }
 }

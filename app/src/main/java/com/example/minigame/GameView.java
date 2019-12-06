@@ -43,7 +43,6 @@ public class GameView extends SurfaceView {
     private ArrayList<CharacterSprite> wave1 = new ArrayList<>();
     private ArrayList<CharacterSprite> wave2 = new ArrayList<>();
     private ArrayList<CharacterSprite> wave3 = new ArrayList<>();
-    private Canvas sameCanvas;
     private boolean start = false;
     Bitmap myBackground;
     private int width = Resources.getSystem().getDisplayMetrics().widthPixels;
@@ -108,7 +107,6 @@ public class GameView extends SurfaceView {
     @Override
     public void draw(Canvas canvas1) {
         super.draw(canvas1);
-        sameCanvas = canvas1;
         if (canvas1 != null) {
             //System.out.println("it is valid and I'm trying to draw");
             Rect src = new Rect();
@@ -122,8 +120,8 @@ public class GameView extends SurfaceView {
                     happyGeoff.getX(),
                     happyGeoff.getY(),
                     paint);
-            characterSprite.draw(canvas1);
             for (int i = 0; i < wave1.size(); i++) {
+                System.out.println(wave1.size());
                 wave1.get(i).draw(canvas1);
             }
         }
@@ -163,11 +161,16 @@ public class GameView extends SurfaceView {
         //when the game is resumed
         //starting the thread again
         System.out.println("im in the resume function");
+        gameThread = new MainThread(this,surfaceHolder);
         gameThread.setRunning(true);
+        if (gameThread == null) {
+            System.out.println("HOW CAN GAME THREAD BE NULL");
+        }
         try {
             gameThread.start();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (IllegalThreadStateException e) {
+            System.out.println(e.getMessage() + " bro");
+            e.printStackTrace();
         }
     }
     @Override
@@ -181,7 +184,18 @@ public class GameView extends SurfaceView {
                     pause();
                 }
         }
-      return true;
+        synchronized (getHolder()) {
+            for (int i = 0; i < wave1.size(); i++) {
+                CharacterSprite currentChar = wave1.get(i);
+                if (currentChar.isClicked(motionEvent.getX(), motionEvent.getY())) {
+                    System.out.println("BEGONE THOTS GO AWAAAAAY");
+                    enemiesKilled++;
+                    wave1.remove(currentChar);
+                    break;
+                }
+            }
+        }
+      return super.onTouchEvent(motionEvent);
     }
 
     public void update() {
