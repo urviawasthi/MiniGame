@@ -27,7 +27,7 @@ public class GameView extends SurfaceView {
     private MainThread gameThread ;
 
     /** Indicates whether game is over or not. */
-    private boolean isGameOver;
+    public boolean isGameOver;
 
     /** Current context for this game view. */
     private Context gameContext;
@@ -47,6 +47,8 @@ public class GameView extends SurfaceView {
     private ArrayList<CharacterSprite> wave3 = new ArrayList<>();
     private int width = Resources.getSystem().getDisplayMetrics().widthPixels;
     private int height = Resources.getSystem().getDisplayMetrics().heightPixels;
+
+    private Canvas imCrying;
 
     Bitmap myBackground;
     Bitmap pauseButton;
@@ -108,6 +110,7 @@ public class GameView extends SurfaceView {
     @Override
     public void draw(Canvas canvas1) {
         super.draw(canvas1);
+        imCrying = canvas1;
         if (canvas1 != null) {
             //System.out.println("it is valid and I'm trying to draw");
             Rect src = new Rect();
@@ -130,7 +133,9 @@ public class GameView extends SurfaceView {
                 wave1.get(i).draw(canvas1);
             }
         }
+
     }
+
     public void pause() {
         //when the game is paused
         try {
@@ -200,26 +205,16 @@ public class GameView extends SurfaceView {
     public void update() {
         //if game is over, then display respective dialog
         if (isGameOver) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
-            builder.setMessage("Game Over!");
-            //PUT API WITH ADVICE SLIPS
-            // Add the buttons
-            builder.setPositiveButton("Play Again", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    // User clicked play again
-                    Intent intent = new Intent(gameContext, GameActivity.class);
-                    gameContext.startActivity(intent);
-                }
-            });
-            builder.setNegativeButton("Main Menu", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    // user clicked main menu
-                    Intent intent = new Intent(gameContext, MainActivity.class);
-                    gameContext.startActivity(intent);
-                }
-            });
-            builder.create().show();
-
+            try {
+                //stopping the thread
+                System.out.println("stop thread");
+                gameThread.setRunning(false);
+                gameOverDialog();
+                System.out.println("join");
+                gameThread.join();
+                System.out.println("join successful");
+            } catch (InterruptedException e) {
+            }
             //also need to add game to high scores here?
             //will implement the above later!
             //move positions of students
@@ -227,7 +222,6 @@ public class GameView extends SurfaceView {
             //if new position clashes with geoff
             //EXTRA: lives and pic changes
         }
-
         //we'll have a counter with the amount of enemies
         //every time you create an enemy, you increase the counter
         //first we add one enemy to the arraylist and once that enemy is killed, then you create another enemy
@@ -235,7 +229,6 @@ public class GameView extends SurfaceView {
             //no enemies have been created yet
             CharacterSprite enemy = new CharacterSprite(studentImage, enemiesKilled + 1);
             wave1.add(enemy);
-            System.out.println("added enemy");
             enemyCount++;
         }
         //keep on increasing the amount of enemies you kill and speed of enemies
@@ -248,5 +241,20 @@ public class GameView extends SurfaceView {
                 enemyCount++;
             }
         }
+        if (Rect.intersects(happyGeoff.getDetectCollision(), wave1.get(0).getDetectCollision())) {
+            System.out.println("IM DETECTING COLLISION");
+            isGameOver = true;
+        }
+    }
+    public void gameOverDialog() {
+        System.out.println("im starting the dialog");
+        if (surfaceHolder.getSurface().isValid()) {
+            System.out.println("it is valid and I'm trying to draw");
+            imCrying.drawColor(Color.RED);
+            surfaceHolder.unlockCanvasAndPost(imCrying);
+        } else {
+            System.out.println("not valid");
+        }
+        
     }
 }

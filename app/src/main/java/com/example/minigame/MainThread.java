@@ -23,10 +23,15 @@ public class MainThread extends Thread {
 
     public void setRunning(boolean run) {
         running = run;
+
     }
 
     @Override
     public void run() {
+        if (!running && gameView.isGameOver) {
+            System.out.println("calling dialog");
+            gameView.gameOverDialog();
+        }
         while (running) {
             canvas = null;
             try {

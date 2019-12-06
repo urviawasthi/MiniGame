@@ -31,7 +31,6 @@ public class CharacterSprite {
         image = Bitmap.createScaledBitmap(
                 image, characterWidth, characterHeight, false);
         generatePosition();
-        speed = 2;
         //initial x and y velocites, without scaling
         xDisplacement = Math.abs(xPosition - (screenWidth / 2));
         yDisplacement = Math.abs((screenHeight / 2) - yPosition);
@@ -167,7 +166,7 @@ public class CharacterSprite {
     }
 
     //returns the detect collision rectangle so that we can detect collision in different quadrants
-    private Rect getDetectCollision() {
+    public Rect getDetectCollision() {
         return detectCollision;
     }
 
