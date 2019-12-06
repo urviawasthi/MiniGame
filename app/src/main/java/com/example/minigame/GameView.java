@@ -133,8 +133,6 @@ public class GameView extends SurfaceView {
     }
     public void pause() {
         //when the game is paused
-        //setting the variable to false
-        //running = false;
         try {
             //stopping the thread
             gameThread.setRunning(false);
@@ -166,6 +164,7 @@ public class GameView extends SurfaceView {
         //when the game is resumed
         //starting the thread again
         System.out.println("im in the resume function");
+        gameThread = new MainThread(this, surfaceHolder);
         gameThread.setRunning(true);
         try {
             gameThread.start();
@@ -180,11 +179,22 @@ public class GameView extends SurfaceView {
                 float touched_x = motionEvent.getX();
                 float touched_y = motionEvent.getY();
                 if (touched_x > width - 230 && touched_x < width - 30 && touched_y > 30 && touched_y < 230) {
-                    System.out.println("CLICKED PAUSE");
                     pause();
                 }
         }
-      return true;
+        //check collision depending on which wave it is
+        synchronized (getHolder()) {
+            for (int i = 0; i < wave1.size(); i++) {
+                CharacterSprite currentChar = wave1.get(i);
+                if (currentChar.isClicked(motionEvent.getX(), motionEvent.getY())) {
+                    System.out.println("BEGONE THOTS GO AWAAAAAY");
+                    //enemiesKilled++;
+                    wave1.remove(currentChar);
+                    break;
+                }
+            }
+        }
+        return super.onTouchEvent(motionEvent);
     }
 
     public void update() {
