@@ -188,8 +188,8 @@ public class GameView extends SurfaceView {
                 CharacterSprite currentChar = wave1.get(i);
                 if (currentChar.isClicked(motionEvent.getX(), motionEvent.getY())) {
                     System.out.println("BEGONE THOTS GO AWAAAAAY");
-                    //enemiesKilled++;
                     wave1.remove(currentChar);
+                    enemiesKilled++;
                     break;
                 }
             }
@@ -233,7 +233,7 @@ public class GameView extends SurfaceView {
         //first we add one enemy to the arraylist and once that enemy is killed, then you create another enemy
         if (enemyCount == 0) {
             //no enemies have been created yet
-            CharacterSprite enemy = new CharacterSprite(studentImage, enemyCount + 1);
+            CharacterSprite enemy = new CharacterSprite(studentImage, enemiesKilled + 1);
             wave1.add(enemy);
             System.out.println("added enemy");
             enemyCount++;
@@ -243,7 +243,7 @@ public class GameView extends SurfaceView {
         if (enemiesKilled > 0) {
             //player killed one enemy, move on to unlimited loop
             for (int i = 0; i < enemiesKilled; i++) {
-                CharacterSprite enemy = new CharacterSprite(studentImage, enemyCount + 1);
+                CharacterSprite enemy = new CharacterSprite(studentImage, enemiesKilled + 1);
                 wave1.add(enemy);
                 enemyCount++;
             }
