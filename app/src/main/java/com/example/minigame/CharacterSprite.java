@@ -26,17 +26,17 @@ public class CharacterSprite {
     private int speed;
     private Rect detectCollision;
 
-    public CharacterSprite(Bitmap bmp) {
+    public CharacterSprite(Bitmap bmp, int setSpeed) {
         image = bmp;
         image = Bitmap.createScaledBitmap(
                 image, characterWidth, characterHeight, false);
         generatePosition();
-        speed = 5;
         //initial x and y velocites, without scaling
         xDisplacement = Math.abs(xPosition - (screenWidth / 2));
         yDisplacement = Math.abs((screenHeight / 2) - yPosition);
 
         //scaling the velocities
+        speed = setSpeed;
         slope = yDisplacement / xDisplacement * speed;
 
         // detecting collision
@@ -80,9 +80,6 @@ public class CharacterSprite {
             detectCollision.right = (int) xPosition + image.getWidth();
             detectCollision.bottom = (int) yPosition + image.getHeight();
 
-            //depending on which wave it is, change the SPEED
-            //depending on where it's coming from, DIFF X AND Y
-            //redraw
         }
     }
 
@@ -168,5 +165,17 @@ public class CharacterSprite {
     //returns the detect collision rectangle so that we can detect collision in different quadrants
     private Rect getDetectCollision() {
         return detectCollision;
+    }
+
+    //checking if a certain button is clicked
+    public boolean isClicked(float xClicked, float yClicked) {
+        //more than x position but less than x position plus width
+        //more than y position but less than y position plus width
+        return (xClicked > xPosition) && (xClicked < xPosition + characterWidth)
+                && (yClicked > yPosition) && (yClicked < yPosition + characterHeight);
+    }
+
+    public double getXPosition() {
+        return xPosition;
     }
 }
