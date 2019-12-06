@@ -30,6 +30,7 @@ public class MainThread extends Thread {
         while (running) {
             canvas = null;
             try {
+                //lock the canvas to make changes to it before unlocking it
                 canvas = holder.lockCanvas();
                 synchronized(holder) {
                     gameView.update();
@@ -89,7 +90,5 @@ public class MainThread extends Thread {
 
         builder.create().show();
     } */
-
-
 
 }
