@@ -32,6 +32,9 @@ public class GameView extends SurfaceView {
     /** Current context for this game view. */
     private Context gameContext;
 
+    /** Geoff's face in the middle of the screen. */
+    private Geoff happyGeoff;
+
     //Need these to draw
     private Paint paint;
     private SurfaceHolder surfaceHolder;
@@ -47,6 +50,7 @@ public class GameView extends SurfaceView {
     private int height = Resources.getSystem().getDisplayMetrics().heightPixels;
     Bitmap pauseButton;
 
+
     //Constructor
     public GameView(Context context) {
         super(context);
@@ -55,14 +59,17 @@ public class GameView extends SurfaceView {
         setFocusable(true);
         gameContext = context;
         //right now, the game is not over and the user is playing the game
-        isGameOver = false; //$$$ would this cause problemos?
+        isGameOver = false;
+
         //initialize drawing stuff
         paint = new Paint();
         myBackground = BitmapFactory.decodeResource(getResources(),R.drawable.gameactivitybackground);
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.pleasepause);
         pauseButton = Bitmap.createScaledBitmap(bitmap, 200, 200, false);
+        happyGeoff = new Geoff(context);
+
         //BUTTON LOCATION -> x is from (width - 230) to (width - 30)
-        //                -> y is from (30) to (230)
+        //                -> y is from (0) to (30)
         //Implement SurfaceHolder.Callback and only render on the Surface
         //when you receive the surfaceCreated(SurfaceHolder holder) callback. For example:
         surfaceHolder.addCallback(new SurfaceHolder.Callback() {
@@ -87,7 +94,7 @@ public class GameView extends SurfaceView {
                 //When the surface is created, call your game thread variable's function that
                 //controls the running and set it equal to true
                 //draw();
-                characterSprite = new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.studenttemp), 0, 0);
+                characterSprite = new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.studenttemp));
                 gameThread.setRunning(true);
                 //System.out.println("game view calls it to run");
                 gameThread.start();
@@ -110,6 +117,12 @@ public class GameView extends SurfaceView {
             dest.set(0, 0, 1000, 600);
             canvas1.drawBitmap(myBackground, dest, src, null);
             canvas1.drawBitmap(pauseButton, width - 230, 30, null);
+            canvas1.drawBitmap(
+                    happyGeoff.getBitmap(),
+                    happyGeoff.getX(),
+                    happyGeoff.getY(),
+                    paint);
+            characterSprite.draw(canvas1);
             for (int i = 0; i < wave1.size(); i++) {
                 wave1.get(i).draw(canvas1);
             }
@@ -125,7 +138,6 @@ public class GameView extends SurfaceView {
             gameThread.join();
         } catch (InterruptedException e) {
         }
-
         //also show a dialog that tells the user the game is paused, and asks them to resume
         AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
         builder.setMessage("Game Paused!");
@@ -146,6 +158,7 @@ public class GameView extends SurfaceView {
 
         builder.create().show();
     }
+
     public void resume() {
         //when the game is resumed
         //starting the thread again
@@ -211,20 +224,18 @@ public class GameView extends SurfaceView {
         } else if (enemiesKilled > 3) {
             //second wave
         } else {
-            //first three enemies
-            //how do I create enemies here?
-            //System.out.println("HELLO");
+            //first create three enemies
             if (!start) {
                 //create the enemies
                 //System.out.println("CREATE ENEMIESSS");
                 for (int i = 0; i < 30; i+= 10) {
-                    wave1.add(new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.studenttemp),i + 20, i + 20)); //create 3 different ones and add them
+                    wave1.add(new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.studenttemp))); //create 3 different ones and add them
                     start = true;
                 }
             } else {
                 //move the already created enemies
                 for (int i = 0; i < 3; i++) {
-                    wave1.get(i).move(1);
+                    wave1.get(i).move();
                 }
             }
         }
