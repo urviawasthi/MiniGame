@@ -18,27 +18,26 @@ public class CharacterSprite {
     private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     private int quadrant;
     private int edge;
-    private int characterWidth = 150;
-    private int characterHeight = 200;
+    private int characterWidth = 100;
+    private int characterHeight = 150;
     private double xDisplacement;
     private double yDisplacement;
     private double slope;
-    private int speed;
+    private double speed;
     private Rect detectCollision;
 
-    public CharacterSprite(Bitmap bmp, int setSpeed) {
+    public CharacterSprite(Bitmap bmp, double setSpeed) {
         image = bmp;
         image = Bitmap.createScaledBitmap(
                 image, characterWidth, characterHeight, false);
         generatePosition();
-        speed = 2;
         //initial x and y velocites, without scaling
         xDisplacement = Math.abs(xPosition - (screenWidth / 2));
         yDisplacement = Math.abs((screenHeight / 2) - yPosition);
 
         //scaling the velocities
         speed = setSpeed;
-        slope = yDisplacement / xDisplacement * speed;
+        slope = (yDisplacement / xDisplacement) * speed;
 
         // detecting collision
         isCrashing = false;
@@ -93,11 +92,11 @@ public class CharacterSprite {
         int low = 0;
         if (quadrant == 1 || quadrant == 4) {
             high = screenWidth;
-            low = screenWidth / 2;
+            low = screenWidth / 2 + screenWidth / 4;
             return rand.nextInt(high-low) + low;
         }
         else {
-            high = screenWidth / 2;
+            high = screenWidth / 2 - screenWidth / 4;
             low = 0;
             return rand.nextInt(high-low) + low;
         }
@@ -167,7 +166,7 @@ public class CharacterSprite {
     }
 
     //returns the detect collision rectangle so that we can detect collision in different quadrants
-    private Rect getDetectCollision() {
+    public Rect getDetectCollision() {
         return detectCollision;
     }
 

@@ -3,6 +3,7 @@ package com.example.minigame;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,13 +22,15 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.util.ArrayList;
 
+import static com.example.minigame.MainThread.canvas;
+
 public class GameView extends SurfaceView {
 
     /** Main game loop. */
     private MainThread gameThread ;
 
     /** Indicates whether game is over or not. */
-    private boolean isGameOver;
+    public static boolean isGameOver;
 
     /** Current context for this game view. */
     private Context gameContext;
@@ -41,17 +44,21 @@ public class GameView extends SurfaceView {
 
     //Need these to draw
     private Paint paint;
+    private Paint paint1;
     private SurfaceHolder surfaceHolder;
-    private ArrayList<CharacterSprite> wave1 = new ArrayList<>();
+    public static ArrayList<CharacterSprite> wave1 = new ArrayList<>();
     private ArrayList<CharacterSprite> wave2 = new ArrayList<>();
     private ArrayList<CharacterSprite> wave3 = new ArrayList<>();
     private int width = Resources.getSystem().getDisplayMetrics().widthPixels;
     private int height = Resources.getSystem().getDisplayMetrics().heightPixels;
+    private Bitmap myBackground;
+    private Bitmap pauseButton;
+    public static Bitmap studentImage;
+    SharedPreferences.Editor e;
 
-    Bitmap myBackground;
-    Bitmap pauseButton;
-    Bitmap studentImage;
-
+    //need these to store high scores
+    int[] highScores = new int[3];
+    SharedPreferences sharedPreferences;
 
     //Constructor
     public GameView(Context context) {
@@ -62,14 +69,14 @@ public class GameView extends SurfaceView {
         gameContext = context;
         //right now, the game is not over and the user is playing the game
         isGameOver = false;
-
         //initialize drawing stuff
         paint = new Paint();
-        myBackground = BitmapFactory.decodeResource(getResources(),R.drawable.gameactivitybackground);
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.pleasepause);
-        pauseButton = Bitmap.createScaledBitmap(bitmap, 200, 200, false);
+        paint1 = new Paint();
+        myBackground = BitmapFactory.decodeResource(getResources(),R.drawable.gameactivitybackground).copy(Bitmap.Config.ARGB_8888, true);;
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.pleasepause).copy(Bitmap.Config.ARGB_8888, true);;
+        pauseButton = Bitmap.createScaledBitmap(bitmap, 200, 200, false).copy(Bitmap.Config.ARGB_8888, true);;
         happyGeoff = new Geoff(context);
-        studentImage = BitmapFactory.decodeResource(getResources(),R.drawable.studenttemp);
+        studentImage = BitmapFactory.decodeResource(getResources(),R.drawable.studenttemp).copy(Bitmap.Config.ARGB_8888, true);;
 
         //BUTTON LOCATION -> x is from (width - 230) to (width - 30)
         //                -> y is from (0) to (30)
@@ -97,12 +104,28 @@ public class GameView extends SurfaceView {
                 //When the surface is created, call your game thread variable's function that
                 //controls the running and set it equal to true
                 gameThread.setRunning(true);
+                //run startEnemySpawn(System.currentTimeMillis())
                 gameThread.start();
+
             }
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
 
         });
+
+        //initializing the array high scores with the previous values
+        sharedPreferences = context.getSharedPreferences("HIGH_SCORES", Context.MODE_PRIVATE);
+
+        //initializing high scores array with 0
+        highScores[0] = sharedPreferences.getInt("highscore1",0);
+        highScores[1] = sharedPreferences.getInt("highscore2",0);
+        highScores[2] = sharedPreferences.getInt("highscore3",0);
+
+        //initializing shared preferences with 0
+        e = sharedPreferences.edit();
+        e.putInt("highscore1", 0);
+        e.putInt("highscore1", 1);
+        e.putInt("highscore1", 2);
     }
 
     @Override
@@ -122,13 +145,18 @@ public class GameView extends SurfaceView {
                     happyGeoff.getY(),
                     paint);
             //we need to draw the sprites to the canvas
+            //lets render the enemies onto the list here
             //wave1 is the list of enemies
             //each time, we loop through the array list of enemies
             //and draw each enemy to the canvas
             for (int i = 0; i < wave1.size(); i++) {
-                wave1.get(i).move();
                 wave1.get(i).draw(canvas1);
             }
+
+            //draw the current score to the canvas
+            paint1.setColor(Color.WHITE);
+            paint1.setTextSize(150);
+            canvas1.drawText(Integer.toString(enemiesKilled), 45, 150, paint1);
         }
     }
     public void pause() {
@@ -163,7 +191,6 @@ public class GameView extends SurfaceView {
     public void resume() {
         //when the game is resumed
         //starting the thread again
-        System.out.println("im in the resume function");
         gameThread = new MainThread(this, surfaceHolder);
         gameThread.setRunning(true);
         try {
@@ -187,7 +214,6 @@ public class GameView extends SurfaceView {
             for (int i = 0; i < wave1.size(); i++) {
                 CharacterSprite currentChar = wave1.get(i);
                 if (currentChar.isClicked(motionEvent.getX(), motionEvent.getY())) {
-                    System.out.println("BEGONE THOTS GO AWAAAAAY");
                     wave1.remove(currentChar);
                     enemiesKilled++;
                     break;
@@ -220,9 +246,18 @@ public class GameView extends SurfaceView {
             });
             builder.create().show();
 
-            //also need to add game to high scores here?
-            //will implement the above later!
-            //move positions of students
+            //if applies, add high score to high scores array
+            for (int i = 2; i >= 0; i--) {
+                if (highScores[i] < enemiesKilled) {
+                    highScores[i] = enemiesKilled;
+                    break;
+                }
+            }
+            //putting the high scores array into shared preferences
+            for (int i = 1; i < 4; i++) {
+                e.putInt("highscore" + i, highScores[i]);
+            }
+            e.apply();
             //MAIN: if geoff is hit, game over is false, playing is false
             //if new position clashes with geoff
             //EXTRA: lives and pic changes
@@ -231,22 +266,8 @@ public class GameView extends SurfaceView {
         //we'll have a counter with the amount of enemies
         //every time you create an enemy, you increase the counter
         //first we add one enemy to the arraylist and once that enemy is killed, then you create another enemy
-        if (enemyCount == 0) {
-            //no enemies have been created yet
-            CharacterSprite enemy = new CharacterSprite(studentImage, enemiesKilled + 1);
-            wave1.add(enemy);
-            System.out.println("added enemy");
-            enemyCount++;
-        }
-        //keep on increasing the amount of enemies you kill and speed of enemies
-        //will be based on how many enemies have been killed
-        if (enemiesKilled > 0) {
-            //player killed one enemy, move on to unlimited loop
-            for (int i = 0; i < enemiesKilled; i++) {
-                CharacterSprite enemy = new CharacterSprite(studentImage, enemiesKilled + 1);
-                wave1.add(enemy);
-                enemyCount++;
-            }
+        for (int i = 0; i < wave1.size(); i++) {
+            wave1.get(i).move();
         }
     }
 }

@@ -14,29 +14,18 @@
         android:adjustViewBounds="false"
         android:scaleType="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/siebelpic"
         tools:srcCompat="@drawable/siebelpic" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="539dp"
-        android:layout_height="110dp"
-        android:layout_marginStart="96dp"
-        android:layout_marginLeft="96dp"
-        android:layout_marginTop="48dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/highscoreslabel" />
-
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/highscore1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="260dp"
-        android:layout_marginLeft="260dp"
+        android:layout_marginStart="208dp"
+        android:layout_marginLeft="208dp"
         android:layout_marginTop="176dp"
         android:text="1. No Score Yet"
         android:textColor="#FFFFFF"
@@ -48,11 +37,11 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/highscore2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="260dp"
-        android:layout_marginLeft="260dp"
+        android:layout_marginStart="208dp"
+        android:layout_marginLeft="208dp"
         android:layout_marginTop="228dp"
         android:text="2. No Score Yet"
         android:textColor="#FFFFFF"
@@ -64,11 +53,11 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/highscore3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="260dp"
-        android:layout_marginLeft="260dp"
+        android:layout_marginStart="208dp"
+        android:layout_marginLeft="208dp"
         android:layout_marginTop="276dp"
         android:cursorVisible="false"
         android:shadowColor="#000000"
@@ -92,12 +81,23 @@
         style="@android:style/Widget.Holo.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="312dp"
-        android:layout_marginLeft="312dp"
+        android:layout_marginStart="260dp"
+        android:layout_marginLeft="260dp"
         android:layout_marginTop="316dp"
         android:text="Back"
         android:textColor="#F59263"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="539dp"
+        android:layout_height="110dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginLeft="44dp"
+        android:layout_marginTop="48dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/highscoreslabel" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
