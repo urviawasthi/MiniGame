@@ -19,9 +19,29 @@ import android.view.SurfaceView;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import static com.example.minigame.MainThread.canvas;
@@ -46,6 +66,10 @@ public class GameView extends SurfaceView {
     /** Keeping track of how many times Geoff has been hit, to make Geoff's image change. */
     private int lives;
 
+    /** The setup and punchline of the jokes that Geoff says at the very end. Acquired through API. */
+    private String setup;
+    private String punchline;
+
     //Need these to draw
     private Paint paint;
     private Paint paint1;
@@ -59,7 +83,7 @@ public class GameView extends SurfaceView {
     private Bitmap pauseButton;
     public static Bitmap studentImage;
     SharedPreferences.Editor e;
-
+    private JSONObject object;
     //need these to store high scores
     int[] highScores = new int[3];
     SharedPreferences sharedPreferences;
@@ -277,6 +301,8 @@ public class GameView extends SurfaceView {
             public void run() {
                 AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
                 builder.setMessage("Game Over!");
+                String joke = getJoke();
+                builder.setMessage("Geoff's joke of the game: " + joke);
                 //PUT API WITH ADVICE SLIPS
                 // Add the buttons
                 builder.setPositiveButton("Play Again", new DialogInterface.OnClickListener() {
@@ -284,6 +310,8 @@ public class GameView extends SurfaceView {
                         // User clicked play again
                         Intent intent = new Intent(gameContext, GameActivity.class);
                         gameContext.startActivity(intent);
+                        gameThread.setRunning(true);
+                        gameThread.start();
                     }
                 });
                 builder.setNegativeButton("Main Menu", new DialogInterface.OnClickListener() {
@@ -297,4 +325,38 @@ public class GameView extends SurfaceView {
             }
         });
     }
+
+    public String getJoke() {
+        // Instantiate the Request Queue
+        RequestQueue requestQueue = Volley.newRequestQueue(gameContext);
+        String url ="https://official-joke-api.appspot.com/jokes/programming/random";
+
+        // Request a string response from the provided URL.
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        System.out.println(response);
+                        try {
+                            object = response.getJSONObject(0);
+                            setup = object.get("setup").toString();
+                            if (object.get("setup") == null) {
+                                System.out.println("no luck");
+                            }
+                            System.out.print(object.get("setup").toString());
+                            punchline = object.get("punchline").toString();
+                        } catch (org.json.JSONException e) {
+                            System.out.println("Can't get object as JSON");
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println("that didn't work!");
+            }
+        });
+        requestQueue.add(jsonArrayRequest);
+        return setup + punchline;
+    }
 }
+

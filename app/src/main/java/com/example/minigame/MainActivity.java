@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
                 //when the play button is clicked, launch game activity
                 Intent intent = new Intent(MainActivity.this, GameActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
         //when high scores button is clicked, launch a new activity: scores activity
