@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
@@ -14,10 +13,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
-import android.widget.Button;
 
 public class Scores extends AppCompatActivity {
-    private Button back;
     SharedPreferences highScores;
 
     @Override
@@ -49,14 +46,6 @@ public class Scores extends AppCompatActivity {
 
 
 
-        back = findViewById(R.id.goBack);
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                //when the high scores button is clicked, launch scores activity
-                Intent intent = new Intent(Scores.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 }
+
