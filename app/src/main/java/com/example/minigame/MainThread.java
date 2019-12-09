@@ -33,12 +33,17 @@ public class MainThread extends Thread {
 
     public void setRunning(boolean run) {
         running = run;
+
     }
 
     @Override
     public void run() {
         start = System.currentTimeMillis();
         System.out.println("start is " + start);
+        if (!running && gameView.isGameOver) {
+            System.out.println("calling dialog");
+            gameView.gameOverDialog();
+        }
         while (running) {
             canvas = null;
             try {

@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
         //when high scores button is clicked, launch a new activity: scores activity
         highScoresButton = findViewById(R.id.highScoresButton);
         highScoresButton.setOnClickListener(new View.OnClickListener() {

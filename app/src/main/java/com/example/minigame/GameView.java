@@ -47,8 +47,6 @@ public class GameView extends SurfaceView {
     private Paint paint1;
     private SurfaceHolder surfaceHolder;
     public static ArrayList<CharacterSprite> wave1 = new ArrayList<>();
-    private ArrayList<CharacterSprite> wave2 = new ArrayList<>();
-    private ArrayList<CharacterSprite> wave3 = new ArrayList<>();
     private int width = Resources.getSystem().getDisplayMetrics().widthPixels;
     private int height = Resources.getSystem().getDisplayMetrics().heightPixels;
     private Bitmap myBackground;
@@ -59,6 +57,9 @@ public class GameView extends SurfaceView {
     //need these to store high scores
     int[] highScores = new int[3];
     SharedPreferences sharedPreferences;
+    private Canvas imCrying;
+
+
 
     //Constructor
     public GameView(Context context) {
@@ -131,6 +132,7 @@ public class GameView extends SurfaceView {
     @Override
     public void draw(Canvas canvas1) {
         super.draw(canvas1);
+        imCrying = canvas1;
         if (canvas1 != null) {
             //System.out.println("it is valid and I'm trying to draw");
             Rect src = new Rect();
@@ -150,6 +152,7 @@ public class GameView extends SurfaceView {
             //each time, we loop through the array list of enemies
             //and draw each enemy to the canvas
             for (int i = 0; i < wave1.size(); i++) {
+                wave1.get(i).move();
                 wave1.get(i).draw(canvas1);
             }
 
@@ -158,7 +161,9 @@ public class GameView extends SurfaceView {
             paint1.setTextSize(150);
             canvas1.drawText(Integer.toString(enemiesKilled), 45, 150, paint1);
         }
+
     }
+
     public void pause() {
         //when the game is paused
         try {
@@ -191,6 +196,7 @@ public class GameView extends SurfaceView {
     public void resume() {
         //when the game is resumed
         //starting the thread again
+        System.out.println("im in the resume function");
         gameThread = new MainThread(this, surfaceHolder);
         gameThread.setRunning(true);
         try {
@@ -214,6 +220,7 @@ public class GameView extends SurfaceView {
             for (int i = 0; i < wave1.size(); i++) {
                 CharacterSprite currentChar = wave1.get(i);
                 if (currentChar.isClicked(motionEvent.getX(), motionEvent.getY())) {
+                    System.out.println("BEGONE THOTS GO AWAAAAAY");
                     wave1.remove(currentChar);
                     enemiesKilled++;
                     break;
@@ -258,16 +265,44 @@ public class GameView extends SurfaceView {
                 e.putInt("highscore" + i, highScores[i]);
             }
             e.apply();
+            try {
+                //stopping the thread
+                System.out.println("stop thread");
+                gameThread.setRunning(false);
+                gameOverDialog();
+                System.out.println("join");
+                gameThread.join();
+                System.out.println("join successful");
+            } catch (InterruptedException e) {
+            }
+            //also need to add game to high scores here?
+            //will implement the above later!
+            //move positions of students
             //MAIN: if geoff is hit, game over is false, playing is false
             //if new position clashes with geoff
             //EXTRA: lives and pic changes
         }
-
         //we'll have a counter with the amount of enemies
         //every time you create an enemy, you increase the counter
         //first we add one enemy to the arraylist and once that enemy is killed, then you create another enemy
         for (int i = 0; i < wave1.size(); i++) {
             wave1.get(i).move();
         }
+
+        if (Rect.intersects(happyGeoff.getDetectCollision(), wave1.get(0).getDetectCollision())) {
+            System.out.println("IM DETECTING COLLISION");
+            isGameOver = true;
+        }
+    }
+    public void gameOverDialog() {
+        System.out.println("im starting the dialog");
+        if (surfaceHolder.getSurface().isValid()) {
+            System.out.println("it is valid and I'm trying to draw");
+            imCrying.drawColor(Color.RED);
+            surfaceHolder.unlockCanvasAndPost(imCrying);
+        } else {
+            System.out.println("not valid");
+        }
+
     }
 }
