@@ -161,7 +161,7 @@ public class CharacterSprite {
 
     //setting the xPosition so that we can move the bitmap away as soon as collision is detected
     //or so that we can move it away when user taps on it
-    private void setXPosition(double setXPosition) {
+    public void setXPosition(double setXPosition) {
         xPosition = setXPosition;
     }
 

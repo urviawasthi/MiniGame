@@ -21,8 +21,13 @@ public class Geoff {
     //rectangle for detecting collision
     private Rect detectCollision;
 
+    //context
+    private Context context;
+
     //constructor
-    public Geoff(Context context) {
+    public Geoff(Context setContext) {
+        //setting context
+        context = setContext;
         //Getting bitmap from drawable resource and scale it
         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.happygeoff);
         bitmap = Bitmap.createScaledBitmap(
@@ -51,6 +56,12 @@ public class Geoff {
      * */
     public Bitmap getBitmap() {
         return bitmap;
+    }
+
+    public void setBitmap() {
+        bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.poutygeoff);
+        bitmap = Bitmap.createScaledBitmap(
+                bitmap, 200, 275, false);
     }
 
     public int getX() {

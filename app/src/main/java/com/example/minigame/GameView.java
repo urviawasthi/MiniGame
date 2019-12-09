@@ -12,6 +12,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.util.AttributeSet;
@@ -40,7 +42,9 @@ public class GameView extends SurfaceView {
 
     /** Keeping track of enemy count and kill count to update game difficulty */
     private int enemiesKilled = 0;
-    private int enemyCount = 0;
+
+    /** Keeping track of how many times Geoff has been hit, to make Geoff's image change. */
+    private int lives;
 
     //Need these to draw
     private Paint paint;
@@ -78,6 +82,8 @@ public class GameView extends SurfaceView {
         happyGeoff = new Geoff(context);
         studentImage = BitmapFactory.decodeResource(getResources(),R.drawable.studenttemp).copy(Bitmap.Config.ARGB_8888, true);;
 
+        //lives (to make the geoff image change)
+        lives = 2;
         //BUTTON LOCATION -> x is from (width - 230) to (width - 30)
         //                -> y is from (0) to (30)
         //Implement SurfaceHolder.Callback and only render on the Surface
@@ -227,7 +233,6 @@ public class GameView extends SurfaceView {
         //if game is over, then display respective dialog
         if (isGameOver) {
             gameThread.setRunning(false);
-            System.out.println("game over is true");
 
             //if applies, add high score to high scores array
             for (int i = 2; i >= 0; i--) {
@@ -253,8 +258,43 @@ public class GameView extends SurfaceView {
             wave1.get(i).move();
             //find out if there has been a collision and if so, set isgameover to true
             if (Rect.intersects(happyGeoff.getDetectCollision(), wave1.get(i).getDetectCollision())) {
-                isGameOver = true;
+                wave1.get(i).setXPosition(3000);
+                lives--;
+                if (lives == 1) {
+                    //make geoff turn pouty
+                    happyGeoff.setBitmap();
+                }
+                if (lives == 0) {
+                    isGameOver = true;
+                }
             }
         }
+    }
+
+    public void gameOverDialog() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
+                builder.setMessage("Game Over!");
+                //PUT API WITH ADVICE SLIPS
+                // Add the buttons
+                builder.setPositiveButton("Play Again", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked play again
+                        Intent intent = new Intent(gameContext, GameActivity.class);
+                        gameContext.startActivity(intent);
+                    }
+                });
+                builder.setNegativeButton("Main Menu", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // user clicked main menu
+                        Intent intent = new Intent(gameContext, MainActivity.class);
+                        gameContext.startActivity(intent);
+                    }
+                });
+                builder.create().show();
+            }
+        });
     }
 }

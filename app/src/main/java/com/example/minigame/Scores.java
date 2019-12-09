@@ -34,6 +34,9 @@ public class Scores extends AppCompatActivity {
             }
         });
 
+        highScores = getSharedPreferences("HIGH_SCORES", Context.MODE_PRIVATE);
+
+
         //getting text views for high scores
         TextView highScore1 = findViewById(R.id.highscore1);
         TextView highScore2 = findViewById(R.id.highscore2);

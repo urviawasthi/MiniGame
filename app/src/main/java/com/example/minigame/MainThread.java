@@ -70,30 +70,7 @@ public class MainThread extends Thread {
                 }
             }
         }
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setMessage("Game Over!");
-                //PUT API WITH ADVICE SLIPS
-                // Add the buttons
-                builder.setPositiveButton("Play Again", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User clicked play again
-                        Intent intent = new Intent(context, GameActivity.class);
-                        context.startActivity(intent);
-                    }
-                });
-                builder.setNegativeButton("Main Menu", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // user clicked main menu
-                        Intent intent = new Intent(context, MainActivity.class);
-                        context.startActivity(intent);
-                    }
-                });
-                builder.create().show();
-            }
-        });
+        gameView.gameOverDialog();
     }
 
     public void startEnemySpawn(long currentTime) {
