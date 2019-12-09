@@ -64,7 +64,7 @@ public class GameView extends SurfaceView {
     public GameView(Context context) {
         super(context);
         surfaceHolder = getHolder();
-        gameThread = new MainThread(this, surfaceHolder);
+        gameThread = new MainThread(this, surfaceHolder, context);
         setFocusable(true);
         gameContext = context;
         //right now, the game is not over and the user is playing the game
@@ -191,7 +191,7 @@ public class GameView extends SurfaceView {
     public void resume() {
         //when the game is resumed
         //starting the thread again
-        gameThread = new MainThread(this, surfaceHolder);
+        gameThread = new MainThread(this, surfaceHolder, gameContext);
         gameThread.setRunning(true);
         try {
             gameThread.start();
@@ -226,26 +226,8 @@ public class GameView extends SurfaceView {
     public void update() {
         //if game is over, then display respective dialog
         if (isGameOver) {
+            gameThread.setRunning(false);
             System.out.println("game over is true");
-            AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
-            builder.setMessage("Game Over!");
-            //PUT API WITH ADVICE SLIPS
-            // Add the buttons
-            builder.setPositiveButton("Play Again", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    // User clicked play again
-                    Intent intent = new Intent(gameContext, GameActivity.class);
-                    gameContext.startActivity(intent);
-                }
-            });
-            builder.setNegativeButton("Main Menu", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    // user clicked main menu
-                    Intent intent = new Intent(gameContext, MainActivity.class);
-                    gameContext.startActivity(intent);
-                }
-            });
-            builder.create().show();
 
             //if applies, add high score to high scores array
             for (int i = 2; i >= 0; i--) {

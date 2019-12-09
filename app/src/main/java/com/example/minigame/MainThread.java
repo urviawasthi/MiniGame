@@ -1,9 +1,12 @@
 package com.example.minigame;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.SurfaceHolder;
 import java.util.Random;
 
@@ -20,15 +23,16 @@ public class MainThread extends Thread {
     public static Canvas canvas;
     public static long start;
     public long timePreviousEnemySpawned = 0;
+    private Context context;
 
     //need these to draw
     private double spawnDelay = 2000;
 
-    public MainThread(GameView gameView, SurfaceHolder surfaceHolder) {
+    public MainThread(GameView gameView, SurfaceHolder surfaceHolder, Context setContext) {
         super();
         this.gameView = gameView;
         this.holder = surfaceHolder;
-
+        this.context = setContext;
     }
 
     public void setRunning(boolean run) {
@@ -66,6 +70,30 @@ public class MainThread extends Thread {
                 }
             }
         }
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setMessage("Game Over!");
+                //PUT API WITH ADVICE SLIPS
+                // Add the buttons
+                builder.setPositiveButton("Play Again", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked play again
+                        Intent intent = new Intent(context, GameActivity.class);
+                        context.startActivity(intent);
+                    }
+                });
+                builder.setNegativeButton("Main Menu", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // user clicked main menu
+                        Intent intent = new Intent(context, MainActivity.class);
+                        context.startActivity(intent);
+                    }
+                });
+                builder.create().show();
+            }
+        });
     }
 
     public void startEnemySpawn(long currentTime) {
