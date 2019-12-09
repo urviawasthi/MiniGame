@@ -327,38 +327,6 @@ public class GameView extends SurfaceView {
             }
         });
     }
-
-    public String getJoke() {
-        // Instantiate the Request Queue
-        RequestQueue requestQueue = Volley.newRequestQueue(gameContext);
-        String url ="https://official-joke-api.appspot.com/jokes/programming/random";
-
-        // Request a string response from the provided URL.
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        System.out.println(response);
-                        try {
-                            object = response.getJSONObject(0);
-                            setup = object.get("setup").toString();
-                            if (object.get("setup") == null) {
-                                System.out.println("no luck");
-                            }
-                            System.out.print(object.get("setup").toString());
-                            punchline = object.get("punchline").toString();
-                        } catch (org.json.JSONException e) {
-                            System.out.println("Can't get object as JSON");
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                System.out.println("that didn't work!");
-            }
-        });
-        requestQueue.add(jsonArrayRequest);
-        return setup + punchline;
-    }
+    
 }
 
