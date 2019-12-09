@@ -43,7 +43,8 @@ public class Scores extends AppCompatActivity {
         TextView highScore3 = findViewById(R.id.highscore3);
 
         highScores = getSharedPreferences("HIGH_SCORES", Context.MODE_PRIVATE);
-        highScore1.setText("1. " + String.valueOf(highScores.getInt("highScore1", 0)));
+        System.out.println("setting high score in the text view");
+        highScore1.setText("1. " + String.valueOf(highScores.getInt("highScore1", -1)));
         highScore2.setText("2. " + String.valueOf(highScores.getInt("highScore2", 0)));
         highScore3.setText("3. " + String.valueOf(highScores.getInt("highScore3", 0)));
 

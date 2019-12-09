@@ -147,15 +147,15 @@ public class GameView extends SurfaceView {
         sharedPreferences = context.getSharedPreferences("HIGH_SCORES", Context.MODE_PRIVATE);
 
         //initializing high scores array with 0
-        highScores[0] = sharedPreferences.getInt("highscore1",0);
-        highScores[1] = sharedPreferences.getInt("highscore2",0);
-        highScores[2] = sharedPreferences.getInt("highscore3",0);
+        highScores[0] = sharedPreferences.getInt("highScore1",0);
+        highScores[1] = sharedPreferences.getInt("highScore2",0);
+        highScores[2] = sharedPreferences.getInt("highScore3",0);
 
         //initializing shared preferences with 0
         e = sharedPreferences.edit();
-        e.putInt("highscore1", 0);
-        e.putInt("highscore2", 0);
-        e.putInt("highscore3", 0);
+        e.putInt("highScore1", 0);
+        e.putInt("highScore2", 0);
+        e.putInt("highScore3", 0);
     }
 
     @Override
@@ -259,7 +259,8 @@ public class GameView extends SurfaceView {
             gameThread.setRunning(false);
 
             //if applies, add high score to high scores array
-            for (int i = 2; i >= 0; i--) {
+            for (int i = 0; i <= 2; i--) {
+                System.out.println("adding high scores to high scores array");
                 if (highScores[i] < enemiesKilled) {
                     highScores[i] = enemiesKilled;
                     break;
@@ -267,7 +268,8 @@ public class GameView extends SurfaceView {
             }
             //putting the high scores array into shared preferences
             for (int i = 1; i < 4; i++) {
-                e.putInt("highscore" + i, highScores[i - 1]);
+                System.out.println("adding high scores array into shared preferences");
+                e.putInt("highScore" + i, highScores[i - 1]);
             }
             e.apply();
             //MAIN: if geoff is hit, game over is false, playing is false
