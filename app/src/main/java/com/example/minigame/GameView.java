@@ -301,8 +301,8 @@ public class GameView extends SurfaceView {
             public void run() {
                 AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
                 builder.setMessage("Game Over!");
-                String joke = getJoke();
-                builder.setMessage("Geoff's joke of the game: " + joke);
+                //String joke = getJoke();
+                //builder.setMessage("Geoff's joke of the game: " + joke);
                 //PUT API WITH ADVICE SLIPS
                 // Add the buttons
                 builder.setPositiveButton("Play Again", new DialogInterface.OnClickListener() {

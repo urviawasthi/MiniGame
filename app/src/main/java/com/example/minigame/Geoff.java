@@ -45,11 +45,6 @@ public class Geoff {
         detectCollision.bottom = y + bitmap.getHeight();
     }
 
-    //Method to update avatar of character
-    public void update(Context context){
-        bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.poutygeoff);
-    }
-
     /*
      * These are getters you can generate it automatically
      * right click on editor -> generate -> getters
@@ -59,7 +54,7 @@ public class Geoff {
     }
 
     public void setBitmap() {
-        bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.poutygeoff);
+        bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.poutygeoff1);
         bitmap = Bitmap.createScaledBitmap(
                 bitmap, 200, 275, false);
     }
