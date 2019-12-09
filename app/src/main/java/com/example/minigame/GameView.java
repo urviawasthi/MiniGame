@@ -124,8 +124,8 @@ public class GameView extends SurfaceView {
         //initializing shared preferences with 0
         e = sharedPreferences.edit();
         e.putInt("highscore1", 0);
-        e.putInt("highscore1", 1);
-        e.putInt("highscore1", 2);
+        e.putInt("highscore2", 0);
+        e.putInt("highscore3", 0);
     }
 
     @Override
@@ -226,6 +226,7 @@ public class GameView extends SurfaceView {
     public void update() {
         //if game is over, then display respective dialog
         if (isGameOver) {
+            System.out.println("game over is true");
             AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
             builder.setMessage("Game Over!");
             //PUT API WITH ADVICE SLIPS
@@ -255,7 +256,7 @@ public class GameView extends SurfaceView {
             }
             //putting the high scores array into shared preferences
             for (int i = 1; i < 4; i++) {
-                e.putInt("highscore" + i, highScores[i]);
+                e.putInt("highscore" + i, highScores[i - 1]);
             }
             e.apply();
             //MAIN: if geoff is hit, game over is false, playing is false
@@ -268,6 +269,10 @@ public class GameView extends SurfaceView {
         //first we add one enemy to the arraylist and once that enemy is killed, then you create another enemy
         for (int i = 0; i < wave1.size(); i++) {
             wave1.get(i).move();
+            //find out if there has been a collision and if so, set isgameover to true
+            if (Rect.intersects(happyGeoff.getDetectCollision(), wave1.get(i).getDetectCollision())) {
+                isGameOver = true;
+            }
         }
     }
 }
