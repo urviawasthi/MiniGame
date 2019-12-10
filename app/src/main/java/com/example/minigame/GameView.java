@@ -106,7 +106,7 @@ public class GameView extends SurfaceView {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.pleasepause).copy(Bitmap.Config.ARGB_8888, true);;
         pauseButton = Bitmap.createScaledBitmap(bitmap, 200, 200, false).copy(Bitmap.Config.ARGB_8888, true);;
         happyGeoff = new Geoff(context);
-        studentImage = BitmapFactory.decodeResource(getResources(),R.drawable.studenttemp).copy(Bitmap.Config.ARGB_8888, true);;
+        studentImage = BitmapFactory.decodeResource(getResources(),R.drawable.nerd).copy(Bitmap.Config.ARGB_8888, true);;
         //lives (to make the geoff image change)
         lives = 2;
         //BUTTON LOCATION -> x is from (width - 230) to (width - 30)

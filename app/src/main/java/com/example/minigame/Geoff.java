@@ -29,7 +29,7 @@ public class Geoff {
         //setting context
         context = setContext;
         //Getting bitmap from drawable resource and scale it
-        bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.happygeoff);
+        bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.othergeoff);
         bitmap = Bitmap.createScaledBitmap(
                 bitmap, 200, 275, false);
 
