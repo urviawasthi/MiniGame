@@ -260,9 +260,12 @@ public class GameView extends SurfaceView {
             gameThread.setRunning(false);
 
             //if applies, add high score to high scores array
-            for (int i = 0; i <= 2; i--) {
+            for (int i = 0; i <= 2; i++) {
                 System.out.println("adding high scores to high scores array");
                 if (highScores[i] < enemiesKilled) {
+                    for (int j = i; j <= 1; j++) {
+                        highScores[j + 1] = highScores[j];
+                    }
                     highScores[i] = enemiesKilled;
                     break;
                 }
@@ -317,11 +320,17 @@ public class GameView extends SurfaceView {
                             @Override
                             public void onResponse(String response) {
                                 // Display the first 500 characters of the response string.
-                                System.out.println("huh?");
                                 JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
                                 setup = jsonObject.get("setup").getAsString();
                                 punchline = jsonObject.get("punchline").getAsString();
-                                builder.setMessage(setup + " " + punchline);
+                                builder.setMessage("Game Over! To make it up, here's a joke: " + setup + " " + punchline);
+                                builder.setNegativeButton("Main Menu", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        // user clicked main menu
+                                        Intent intent = new Intent(gameContext, MainActivity.class);
+                                        gameContext.startActivity(intent);
+                                    }
+                                });
                                 builder.setPositiveButton("Play Again", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         // User clicked play again
@@ -329,13 +338,6 @@ public class GameView extends SurfaceView {
                                         gameContext.startActivity(intent);
                                         gameThread.setRunning(true);
                                         gameThread.start();
-                                    }
-                                });
-                                builder.setNegativeButton("Main Menu", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        // user clicked main menu
-                                        Intent intent = new Intent(gameContext, MainActivity.class);
-                                        gameContext.startActivity(intent);
                                     }
                                 });
                                 builder.create().show();
