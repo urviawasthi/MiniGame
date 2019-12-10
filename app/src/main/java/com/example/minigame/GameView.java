@@ -88,7 +88,6 @@ public class GameView extends SurfaceView {
     //need these to store high scores
     int[] highScores = new int[3];
     SharedPreferences sharedPreferences;
-    private boolean working = false;
 
     //Constructor
     public GameView(Context context) {
@@ -190,6 +189,7 @@ public class GameView extends SurfaceView {
             canvas1.drawText(Integer.toString(enemiesKilled), 45, 150, paint1);
         }
     }
+
     public void pause() {
         //when the game is paused
         try {
@@ -259,6 +259,7 @@ public class GameView extends SurfaceView {
         if (isGameOver) {
             gameThread.setRunning(false);
 
+            //UPDATE SCORES
             //if applies, add high score to high scores array
             for (int i = 0; i <= 2; i++) {
                 System.out.println("adding high scores to high scores array");
@@ -276,9 +277,6 @@ public class GameView extends SurfaceView {
                 e.putInt("highScore" + i, highScores[i - 1]);
             }
             e.apply();
-            //MAIN: if geoff is hit, game over is false, playing is false
-            //if new position clashes with geoff
-            //EXTRA: lives and pic changes
         }
 
         //we'll have a counter with the amount of enemies
@@ -302,7 +300,6 @@ public class GameView extends SurfaceView {
     }
 
     public void gameOverDialog() {
-        working = false;
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
