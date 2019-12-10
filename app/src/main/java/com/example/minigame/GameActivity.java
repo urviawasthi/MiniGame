@@ -30,4 +30,6 @@ public class GameActivity extends AppCompatActivity {
         setContentView(gameView);
 
     }
+
+
 }

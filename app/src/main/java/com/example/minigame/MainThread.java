@@ -70,7 +70,10 @@ public class MainThread extends Thread {
                 }
             }
         }
-        gameView.gameOverDialog();
+        if (GameView.isGameOver) {
+            gameView.gameOverDialog();
+        }
+
     }
 
     public void startEnemySpawn(long currentTime) {

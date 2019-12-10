@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
+import android.widget.TextView;
 
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -87,6 +88,7 @@ public class GameView extends SurfaceView {
     //need these to store high scores
     int[] highScores = new int[3];
     SharedPreferences sharedPreferences;
+    private boolean working = false;
 
     //Constructor
     public GameView(Context context) {
@@ -105,7 +107,6 @@ public class GameView extends SurfaceView {
         pauseButton = Bitmap.createScaledBitmap(bitmap, 200, 200, false).copy(Bitmap.Config.ARGB_8888, true);;
         happyGeoff = new Geoff(context);
         studentImage = BitmapFactory.decodeResource(getResources(),R.drawable.studenttemp).copy(Bitmap.Config.ARGB_8888, true);;
-
         //lives (to make the geoff image change)
         lives = 2;
         //BUTTON LOCATION -> x is from (width - 230) to (width - 30)
@@ -298,32 +299,55 @@ public class GameView extends SurfaceView {
     }
 
     public void gameOverDialog() {
+        working = false;
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(gameContext);
                 builder.setMessage("Game Over!");
-                //String joke = getJoke();
+
                 //builder.setMessage("Geoff's joke of the game: " + joke);
-                //PUT API WITH ADVICE SLIPS
-                // Add the buttons
-                builder.setPositiveButton("Play Again", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User clicked play again
-                        Intent intent = new Intent(gameContext, GameActivity.class);
-                        gameContext.startActivity(intent);
-                        gameThread.setRunning(true);
-                        gameThread.start();
+                // Instantiate the RequestQueue.
+                String url ="https://official-joke-api.appspot.com/random_joke";
+                RequestQueue queue = Volley.newRequestQueue(gameContext);
+                // Request a string response from the provided URL
+                System.out.println("MAKING REQUEST AFTER THIS");
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                // Display the first 500 characters of the response string.
+                                System.out.println("huh?");
+                                JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
+                                setup = jsonObject.get("setup").getAsString();
+                                punchline = jsonObject.get("punchline").getAsString();
+                                builder.setMessage(setup + " " + punchline);
+                                builder.setPositiveButton("Play Again", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        // User clicked play again
+                                        Intent intent = new Intent(gameContext, GameActivity.class);
+                                        gameContext.startActivity(intent);
+                                        gameThread.setRunning(true);
+                                        gameThread.start();
+                                    }
+                                });
+                                builder.setNegativeButton("Main Menu", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        // user clicked main menu
+                                        Intent intent = new Intent(gameContext, MainActivity.class);
+                                        gameContext.startActivity(intent);
+                                    }
+                                });
+                                builder.create().show();
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println("im a failure");
                     }
                 });
-                builder.setNegativeButton("Main Menu", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // user clicked main menu
-                        Intent intent = new Intent(gameContext, MainActivity.class);
-                        gameContext.startActivity(intent);
-                    }
-                });
-                builder.create().show();
+                // Add the request to the RequestQueue.
+                queue.add(stringRequest);
             }
         });
     }
